@@ -1,0 +1,139 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import java.util.concurrent.TimeUnit;
+
+public class PlaceOrderTest {
+	  WebDriver driver;
+	    POManager2 poManager2;
+	    TestDataForCustomerCreation testDataForCustomerCreation = new TestDataForCustomerCreation();
+	    TestDataForCreditCard testDataForCreditCard = new TestDataForCreditCard();
+
+	    
+	    @BeforeMethod
+	    public void setUp() {
+	        System.setProperty("webdriver.chrome.driver", "Users/552560/eclipse-workspace3/DemoProject/src/chrome-win64/chrome.exe");
+	        driver = new ChromeDriver();
+	        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	        driver.manage().window().maximize();
+	        poManager2 = new POManager2(driver);
+	    }
+
+	    @Test
+	    public void placeOrderTest() {
+	        AutomationExHomePage automationExHomePage = poManager2.getAutomationExHomePage();
+	        automationExHomePage.goTo();
+
+	        // Verify that home page is visible successfully
+	        Assert.assertTrue(automationExHomePage.verifyHomePage());
+
+	        // Click on products page
+	        automationExHomePage.clickOnProductsPage();
+	        AutomationExProductsPage automationExProductsPage = poManager2.getAutomationExProductsPage();
+
+	        // Verify product page
+	        Assert.assertTrue(automationExProductsPage.verifyProductPage());
+
+	        // Add first product to cart
+	        automationExProductsPage.selectFirstProduct();
+
+	        // Add second product to cart
+	        automationExProductsPage.selectSecondProduct();
+
+	        // Click 'Cart' button
+	        automationExProductsPage.clickCartButton();
+
+	        // Verify that cart page is displayed
+	        AutomationCartPage automationCartPage = poManager2.getAutomationCartPage();
+	        Assert.assertTrue(automationCartPage.verifyCartPage());
+
+	        // Click 'Proceed To Checkout' button
+	        automationCartPage.clickCheckoutButton();
+
+	        // Click 'Register / Login' button
+	        automationCartPage.registerLoginButton();
+
+	        // Fill in details in Signup and create account
+	        AutomationExLoginPage automationExLoginPage = poManager2.getAutomationExLoginPage();
+	        automationExLoginPage.fillLoginDetails(testDataForCustomerCreation.getFname(), testDataForCustomerCreation.getUsername());
+	        automationExLoginPage.clickOnSignup();
+
+	        // Complete the registration form
+	        AutomationExSignupPage automationExSignupPage = poManager2.getAutomationExSignupPage();
+	        automationExSignupPage.fillCustomerDetails(
+	                testDataForCustomerCreation.getGender(),
+	                testDataForCustomerCreation.getPassword(),
+	                testDataForCustomerCreation.getDay(),
+	                testDataForCustomerCreation.getMonth(),
+	                testDataForCustomerCreation.getYear(),
+	                testDataForCustomerCreation.getFname(),
+	                testDataForCustomerCreation.getLname(),
+	                testDataForCustomerCreation.getCompany(),
+	                testDataForCustomerCreation.getAddress(),
+	                testDataForCustomerCreation.getCountry(),
+	                testDataForCustomerCreation.getState(),
+	                testDataForCustomerCreation.getSuburb(),
+	                testDataForCustomerCreation.getPostcode(),
+	                testDataForCustomerCreation.getPhone()
+	        );
+	        automationExSignupPage.clickOnSignup();
+
+	        // Verify customer creation page
+	        AutomationExCustomerCreationPage automationExCustomerCreationPage = poManager2.getAutomationExCustomerCreationPage();
+	        Assert.assertTrue(automationExCustomerCreationPage.verifyCustomerCreationPage());
+
+	        // Verify 'Logged in as username' at top
+	        Assert.assertTrue(automationExHomePage.verifyUser());
+
+	        // Click 'Cart' button
+	        automationExHomePage.clickOnCart();
+
+	        // Verify cart page
+	        Assert.assertTrue(automationCartPage.verifyCartPage());
+
+	        // Click 'Proceed To Checkout' button
+	        automationCartPage.proceedToCheckout();
+
+	        // Verify Address Details and Review Your Order
+	        AutomationReviewPage automationReviewPage = poManager2.getAutomationReviewPage();
+	        Assert.assertTrue(automationReviewPage.verifyReviewPage());
+
+	        // Enter description in comment text area and click 'Place Order'
+	        automationReviewPage.populateOrderMessage();
+	        automationReviewPage.continueOrder();
+
+	        // Enter payment details: Name on Card, Card Number, CVC, Expiration date
+	        AutomationPaymentPage automationPaymentPage = poManager2.getAutomationPaymentPage();
+	        automationPaymentPage.fillCreditCardDetails(
+	                testDataForCreditCard.getNameOnCard(),
+	                testDataForCreditCard.getCardNumber(),
+	                testDataForCreditCard.getCvc(),
+	                testDataForCreditCard.getExpiryMonth(),
+	                testDataForCreditCard.getExpiryYear()
+	        );
+	        // Click 'Pay and Confirm Order' button
+	        automationPaymentPage.submitPaymentForOrder();
+
+	        // Verify success message 'Your order has been placed successfully!'
+	        AutomationPaymentOrderConfirmationPage automationPaymentOrderConfirmationPage = poManager2.getAutomationPaymentOrderConfirmationPage();
+	        Assert.assertTrue(automationPaymentOrderConfirmationPage.verifyOrderPage());
+
+	        // Click 'Delete Account' button
+	        automationExHomePage.clickOnDelete();
+
+	        // Verify 'ACCOUNT DELETED!' and click 'Continue' button
+	        AutomationExDeleteConfirmationPage automationExDeleteConfirmationPage = poManager2.getAutomationExDeleteConfirmationPage();
+	        Assert.assertTrue(automationExDeleteConfirmationPage.verifyDeleteConfirmationPage());
+	        automationExDeleteConfirmationPage.continueButton();
+	    }
+
+	    @AfterMethod
+	    public void tearDown() {
+	        driver.quit();
+	    }
+}

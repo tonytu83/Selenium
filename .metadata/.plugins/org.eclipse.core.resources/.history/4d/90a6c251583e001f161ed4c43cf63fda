@@ -1,0 +1,15 @@
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class PlaceOrderTest {
+	  
+	    public static void main(String[] arg) {
+	        System.setProperty("webdriver.chrome.driver", "/Users/552560/eclipse-workspace3/DemoProject/src/chromedriver-win64/chromedriver.exe");
+	        ChromeDriver driver = new ChromeDriver();
+	       // driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	        driver.manage().window().maximize();
+	    
+	    }
+
+
+}

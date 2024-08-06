@@ -1,0 +1,13 @@
+
+public class payload {
+
+	public static String AddBook()
+	{
+		return "{\r\n"
+				+ "\"name\": \"Dony FOEY\",\r\n"
+				+ "\"email\": \"zag9sdfsd03getpoo.com\",\r\n"
+				+ "\"gender\": \"male\",\r\n"
+				+ "\"status\": \"active\"\r\n"
+				+ "}";
+	}
+}
